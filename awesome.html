@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drone Detection</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tilt+Neon&display=swap" rel="stylesheet">
+<style>
+html{height:100vh;}
+body{
+height:100vh;
+display:flex;
+justify-content:center;
+background:linear-gradient(to bottom,#00091B, black);
+color:#fff;
+font-family:"Tilt Neon";
+}
+h1{
+    font-size: 4vw;
+    color: white;
+    font-weight: 700;
+    text-shadow:1px 1px 5px black;
+margin-bottom: 0;
+}
+@keyframes open{
+from{
+transform:scale(1,0);
+background:white;
+}
+to{
+transform:scale(1);
+background: url(https://moewalls.com/wp-content/uploads/2022/04/aesthetic-night-thumb.jpg) ;
+background-size:100%;
+}
+}
+@keyframes move{
+0%,100%{
+transform:translate(0,0);
+z-index:-1;
+}
+20%{
+transform:translateX(20vw);
+}
+40%{
+transform:translateY(15vw);}
+45%{
+height:8vh;
+}
+50%{
+height:5vh;
+z-index:1;
+}
+60%{
+transform:translateX(-25vw);}
+80%{
+transform:translate(-25vw,20vw);}
+90%{
+transform:translate(10vw,25vw);}
+}
+.drone{
+animation:move 10s ease-in-out 1s infinite normal both; 
+height:5vh;
+position:absolute;
+}
+.container{
+animation:open 0.5s ease-in-out 0.2s 1 normal backwards;
+font-size:1.5vw;
+margin:2vw;
+border: 2px solid black; 
+border-radius:15px;
+text-align:center;
+background: url(https://moewalls.com/wp-content/uploads/2022/04/aesthetic-night-thumb.jpg) ;
+background-size:100%;
+opacity: 0.7;
+background-repeat:no-repeat;
+box-shadow:10px 10px 20px black;
+padding:0 20vw 5vw;
+height:max-content;
+}
+.video{
+padding:2vw;
+font-family:serif;
+font-size: 1.5vw;
+}
+.video::file-selector-button{
+padding:1vw;
+border-radius:30px;
+transition:all 0.3s;
+background:rgba(2, 0, 25, 0.616);
+color: white;
+}
+.video::file-selector-button:hover{
+background:white;
+transform:translateY(-5px);
+color: black;
+}
+.submitButton{
+padding:1vw;
+font-size: 1.5vw;
+transition:all 0.3s;
+border-radius:55px;
+background:rgba(1, 2, 30, 0.889);
+color: white;
+width:80%;
+}
+.submitButton:hover{
+background: rgba(255, 255, 255, 0);
+transform:translateY(1px);
+color: white;
+}
+.web{
+background:rgba(0, 0, 0, 0.582);
+color:white;
+border:2px solid white;
+border-radius:15px;
+transition:all 0.3s;
+font-size: 1.5vw;
+}
+.web:hover{
+background:rgba(255, 255, 255, 0.408);
+color:black;
+border:2px solid black;
+padding:5px;
+}
+.emailInput{
+width:100%;
+border-color: gray;
+color: white;
+border-radius: 15px;
+padding: 1px 5px;
+font-size: 1.3vw;
+background: rgba(0, 0, 0, 0);
+}
+.emailInput::placeholder{
+    color: #ffffff82;
+}
+.validie{
+    color: red;
+    font-size: 1vw;
+}
+</style>
+</head>
+<body>
+<div class="container">
+     <img src="https://droneschoolindia.com/static/media/droneVector.c6429324.gif" class="drone"></img>
+    <h1>UPLOAD A VIDEO</h1></br>
+    <form action="/video_feed" method="post" enctype="multipart/form-data" id="videoForm">
+        <input type="file" class="video" name="video" accept="video/*"></br></br>
+<input type="hidden" id="hiddenEmailInput" name="email"></input>
+        <button type="submit" class="submitButton" id="submitButton">Submit</button></br>
+</form></br></br>
+<form action="/video_feed_webcam" method="post" enctype="multipart/form-data" id="camForm">
+    <button type="submit" class="web" id="web">Webcam</button></br></br>
+<input type="email" class="emailInput" id="emailInput" name="email" placeholder="Enter your email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" ></input>
+</form>
+<span id="emailValidationMessage" class="validie"></span>
+    <h2 id="processedVideoHeader" style="display: none;">Processed Video:</h2>
+    <img id="processedVideo" src="" width="50%" style="display: none;">
+</div>
+ <script>
+        function validateEmail() {
+        var emailInput = document.getElementById('emailInput');
+        var emailValidationMessage = document.getElementById('emailValidationMessage');
+        var isValid = emailInput.checkValidity();
+
+        if (!isValid && emailInput.value !== '') {
+            emailValidationMessage.innerHTML = "Please enter a valid email address";
+            return false; // Prevent form submission
+        } else {
+            emailValidationMessage.innerHTML = ""; // Clear validation message
+            // You can perform further actions if needed
+            return true; // Allow form submission
+        }
+    }
+document.addEventListener('DOMContentLoaded', function() {
+        const emailInput = document.getElementById('emailInput');
+        const hiddenEmailInput = document.getElementById('hiddenEmailInput');
+
+        emailInput.addEventListener('change', function() {
+            hiddenEmailInput.value = emailInput.value;
+        });
+    });
+    document.getElementById('emailInput').addEventListener('input',validateEmail);
+ function handleSubmit(event) {
+        if (!validateEmail()) {
+            event.preventDefault(); // Prevent form submission
+        }
+    }
+
+    // Add event listener to the submit button
+    document.getElementById('submitButton').addEventListener('click', handleSubmit);
+
+    // Add event listener to the webcam button
+    document.getElementById('web').addEventListener('click', function(event) {
+        if (!validateEmail()) {
+            event.preventDefault(); // Prevent button click
+        }
+    });
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Asynchronous function to handle form submissions
+    async function handleFormSubmit(formId) {
+        document.getElementById(formId).addEventListener('submit', async (event) =>{
+            event.preventDefault(); // Prevent the default form submission
+
+            const formData = new FormData(this);
+                // Submit the form with updated form data
+            const response = await fetch(this.action, {
+                    method: this.method,
+                    body: formData
+                });
+
+                // Check if the response is OK  
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.blob();
+            })
+            .then(blob => {
+                processedVideoHeader.style.display = 'block';
+                processedVideo.style.display = 'block';
+                var processedVideoUrl = URL.createObjectURL(blob); // Create object URL for the processed video
+                processedVideo.src = processedVideoUrl; // Update src attribute
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+            });
+        });
+
+    }
+
+    // Call the function for each form
+    handleFormSubmit('videoForm');
+    handleFormSubmit('camForm');
+});
+</script>
+</body>
+</html>
